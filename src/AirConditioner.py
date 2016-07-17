@@ -2,6 +2,10 @@
 
 from subprocess import call
 
+# initialize lirc
+init_cmd = "sudo bash /home/pi/python/sandbox/twitterRobot/src/initLirc.sh"
+call(init_cmd.strip().split(" "))
+
 # linux command
 CMD = "sudo irsend"
 
