@@ -2,4 +2,4 @@ json
 lirc/*.dat
 image
 .python-version
-
+*.pyc
