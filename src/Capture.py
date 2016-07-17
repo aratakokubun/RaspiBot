@@ -4,7 +4,7 @@ import cv2
 from subprocess import call
 
 # Call reset servo shell
-cmd = "sudo bash /home/pi/python/sandbox/twitterRobot/src"
+cmd = "sudo bash /home/pi/python/sandbox/twitterRobot/src/stopCamera.sh"
 call(cmd.strip().split(" "))
 
 # Get camera capture instance

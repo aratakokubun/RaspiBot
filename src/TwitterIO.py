@@ -42,10 +42,10 @@ class Listener(StreamListener):
 		return user in self.permitted_users
 
 	def on_status(self, status):
-		if self.filter_users(status.author.name):
+		if self.filter_users(status.author.id):
+		# if self.filter_users(status.author.name):
 			text = status.text
 			print(text)
-			print(status.author)
 			self.operator.operate(text)
 		return True
 

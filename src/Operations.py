@@ -2,9 +2,11 @@
 
 import Servo
 import Capture
+import AirConditioner as Ac
 
 SERVO = "servo"
 PHOTO = "photo"
+AIRCON = "aircon"
 
 OPERATION_INDEX = 2
 
@@ -25,15 +27,20 @@ class Operator:
 		operation = args[OPERATION_INDEX]
 		# select operation
 		if operation == SERVO:
+			if len(args) < 4:
+				print("Number of argument is insufficient.")
+				return
 			try:
 				angle = float(args[OPERATION_INDEX + 1])
 				Servo.rotate_servo(angle=angle)
-				print(angle)
-			except TypeError:
-				print("Invalid Operation")
 			except:
 				print("Invalid arguments")
 		elif operation == PHOTO:
 			Capture.capture_image(TEMP_FILE_PATH)
 			self.tweet.tweet_with_media(TEMP_FILE_PATH, "Take picture.")
-
+		elif operation == AIRCON:
+			if len(args) < 4:
+				print("Number of argument is insufficient.")
+				return
+			option = args[OPERATION_INDEX + 1]
+			Ac.send_ac_cmd(option)

@@ -7,6 +7,7 @@ CONSUMER_SECRET = "CONSUMER_SECRET"
 ACCESS_TOKEN = "ACCESS_TOKEN"
 ACCESS_SECRET = "ACCESS_SECRET"
 PERMITTED_ACCOUNT = "PERMITTED_ACCOUNT"
+PERMITTED_ID = "PERMITTED_ID"
 
 class Settings:
 	
@@ -19,7 +20,8 @@ class Settings:
 		self.consumer_secret = json_data[CONSUMER_SECRET]
 		self.access_token = json_data[ACCESS_TOKEN]
 		self.access_secret = json_data[ACCESS_SECRET]
-		self.permitted_users = json_data[PERMITTED_ACCOUNT]
+		# self.permitted_users = json_data[PERMITTED_ACCOUNT]
+		self.permitted_users = json_data[PERMITTED_ID]
 
 		f.close()
 
