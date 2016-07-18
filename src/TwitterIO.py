@@ -28,6 +28,11 @@ class Tweet():
 	def tweet_with_media(self, fn, status):
 		self.api.update_with_media(fn, status=status)
 
+	def update_with_media(self, fn, status, tweet_id):
+		# self.api.update_with_media(filename=fn, status=status, in_reply_to_status_id=tweet_id)
+		media = self.api.media_upload(fn)
+		self.api.update_status(status=status, reply_to_status_id=tweet_id, media_ids=[media.media_id])
+
 class Listener(StreamListener):
 
 	permitted_users = []
@@ -46,7 +51,7 @@ class Listener(StreamListener):
 		# if self.filter_users(status.author.name):
 			text = status.text
 			print(text)
-			self.operator.operate(text)
+			self.operator.operate(text, status.id)
 		return True
 
 	def on_error(self, status):

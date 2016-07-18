@@ -3,3 +3,4 @@ lirc/*.dat
 image
 .python-version
 *.pyc
+*.org
