@@ -46,11 +46,11 @@ class Listener(StreamListener):
 	def init_operator(self, tweet):
 		self.operator = Operator(tweet) 
 
-	def filter_users(self, user):
+	def __filter_users(self, user):
 		return user in self.permitted_users
 
 	def on_status(self, status):
-		if self.filter_users(status.author.id):
+		if self.__filter_users(status.author.id):
 		# if self.filter_users(status.author.name):
 			text = status.text
 			print(text)

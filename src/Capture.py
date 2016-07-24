@@ -20,10 +20,10 @@ class Capture(OperatorBase):
 		# Get camera capture instance
 		self.cap = cv2.VideoCapture(0)
 		# Register cleanup handler at exit
-		atexit.register(self.cleanup)
+		atexit.register(self.__cleanup)
 
 	# Clean up GPIO on exit
-	def cleanup(self):
+	def __cleanup(self):
 		call(STOP_CMD.strip().split(" "))
 
 	# Concrete methods of super class

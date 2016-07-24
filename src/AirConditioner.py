@@ -26,9 +26,9 @@ class AirConditioner(OperatorBase):
 		# Initialize camera
 		call(INIT_CMD.strip().split(" "))
 		# Register cleanup handler
-		atexit.register(self.cleanup)
+		atexit.register(self.__cleanup)
 
-	def cleanup(self):
+	def __cleanup(self):
 		call(STOP_CMD.strip().split(" "))
 
 	# Concrete methods of super class
@@ -39,18 +39,18 @@ class AirConditioner(OperatorBase):
 		return args[0] in OPTIONS
 
 	# Send remote controll commands
-	def send_cmd(self, count=ONCE, device=DEV_NAME, option=OFF):
+	def __send_cmd(self, count=ONCE, device=DEV_NAME, option=OFF):
 		fqcmd = " ".join([CMD, count, device, option])
 		call(fqcmd.strip().split(" "))
 
 	def send_off(self):
 		print("Cooler Off")
-		self.send_cmd(option=OFF)
+		self.__send_cmd(option=OFF)
 
 	def send_cooler_on(self, trial=1):
 		print("Cooler On")
 		for _ in range(trial):
-			self.send_cmd(option=COOLER_ON)
+			self.__send_cmd(option=COOLER_ON)
 
 	def send_ac_cmd(self, option):
 		if option == COOLER_ON:

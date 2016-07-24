@@ -25,12 +25,12 @@ class Servo(OperatorBase):
 		# Set servo pin
 		GPIO.setup(SERVO_GPIO, GPIO.OUT)
 		# Initialize servo
-		self.init_servo()
+		self.__init_servo()
 		# Register cleanup handler at exit
-		atexit.register(self.cleanup)
+		atexit.register(self.__cleanup)
 
 	# Clean up GPIO on exit
-	def cleanup(self):
+	def __cleanup(self):
 		self.servo.ChangeDutyCycle(DC_MIN)
 		time.sleep(0.5)
 		self.servo.stop()
@@ -39,7 +39,7 @@ class Servo(OperatorBase):
 	"""
 	Initialize GPIO servo.
 	"""
-	def init_servo(self):
+	def __init_servo(self):
 		self.servo = GPIO.PWM(SERVO_GPIO, HZ)
 		self.servo.start(0.0)
 
@@ -51,10 +51,7 @@ class Servo(OperatorBase):
 	def check_args(self, args):
 		try:
 			angle = float(args[0])
-			if self.check_angle(angle):
-				return True
-			else:
-				return False
+			return self.__check_angle(angle)
 		except:
 			return False
 
@@ -62,14 +59,15 @@ class Servo(OperatorBase):
 	Convert angle to duty cycle.
 	@param angle : angle to convert
 	"""
-	def angle2dc(self, angle):
+	@classmethod
+	def __angle2dc(self, angle):
 		return DC_MIN + (DC_MAX - DC_MIN) * angle / 180.0
 
 	"""
 	Check angle arguments.
 	@param angle : angle to check
 	"""
-	def check_angle(self, angle):
+	def __check_angle(self, angle):
 		return 0.0 <= angle < 180.0
 
 	"""
@@ -77,9 +75,9 @@ class Servo(OperatorBase):
 	@param angle : target angle
 	"""
 	def rotate_servo(self, angle=90.0):
-		if self.check_angle(angle):
+		if self.__check_angle(angle):
 			self.angle = angle
-			dc = self.angle2dc(angle)
+			dc = Servo.__angle2dc(angle)
 			print("dc = {0}".format(dc))
 			# Start servo
 			# self.servo.start(0.0)
