@@ -33,6 +33,9 @@ class Tweet():
 		media = self.api.media_upload(fn)
 		self.api.update_status(status=status, reply_to_status_id=tweet_id, media_ids=[media.media_id])
 
+	def update(self, status, tweet_id):
+		self.api.update_status(status=status, reply_to_status_id=tweet_id)
+
 class Listener(StreamListener):
 
 	permitted_users = []

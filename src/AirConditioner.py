@@ -5,8 +5,8 @@ from Operations import OperatorBase
 import atexit
 
 # lirc commands
-INIT_CMD = "sudo bash /home/pi/python/sandbox/twitterRobot/src/initLirc.sh"
-STOP_CMD = "sudo bash /home/pi/python/sandbox/twitterRobot/src/stopLirc.sh"
+INIT_CMD = "sudo bash ./src/initLirc.sh"
+STOP_CMD = "sudo bash ./src/stopLirc.sh"
 
 # linux command
 CMD = "sudo irsend"
@@ -54,7 +54,7 @@ class AirConditioner(OperatorBase):
 
 	def send_ac_cmd(self, option):
 		if option == COOLER_ON:
-			self.send_cooler_on(trial=2)
+			self.send_cooler_on(trial=3)
 		else:
 			self.send_off()
 

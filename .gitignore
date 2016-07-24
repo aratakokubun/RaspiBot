@@ -1,6 +1,11 @@
 json
-lirc/*.dat
+*.dat
+*.conf
 image
+usonic
 .python-version
 *.pyc
 *.org
+log
+*test*
+*Test*

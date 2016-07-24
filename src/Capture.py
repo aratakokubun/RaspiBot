@@ -6,9 +6,9 @@ import atexit
 from Operations import OperatorBase
 
 # Image file path
-TEMP_FILE_PATH = "/home/pi/python/sandbox/twitterRobot/image/temp.jpg"
+TEMP_FILE_PATH = "./image/temp.jpg"
 # Stop cmd shell
-STOP_CMD = "sudo bash /home/pi/python/sandbox/twitterRobot/src/stopCamera.sh"
+STOP_CMD = "sudo bash ./src/stopCamera.sh"
 
 class Capture(OperatorBase):
 
