@@ -15,10 +15,12 @@ class Operator:
 		from Servo import Servo as Sv
 		from Capture import Capture as Cp
 		from AirConditioner import AirConditioner as Ac
+		from USonic import USonic as Us
 		servo = Sv()
 		capture = Cp(tweet)
 		aircon = Ac()
-		self.operations = [servo, capture, aircon]
+		usonic = Us(tweet)
+		self.operations = [servo, capture, aircon, usonic]
 
 	"""
 	Parse operation set from arguments.

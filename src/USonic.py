@@ -14,10 +14,10 @@ ECHO_GPIO = 27
 
 # Message
 MESSAGE_NOW_FORMAT = "Current distance is {0}[cm]."
-MESSAGE_LOG_FORMAT = "Distance log per hour of this week."
+MESSAGE_LOG_FORMAT = "Distance log in an hour."
 
 # Files
-USONIC_GRAPH_TEMP = "/image/usonic_temp.png"
+USONIC_GRAPH_TEMP = "./image/usonic_temp.png"
 	
 class USonic(OperatorBase):
 
@@ -28,7 +28,7 @@ class USonic(OperatorBase):
 	
 	def __init__(self, tweet):
 		super(USonic, self).__init__("usonic", 1)
-		OPTIONS = {USonic.NOW:self.__usonic_now, USonic.LOG:self.__usonic_log}
+		self.OPTIONS = {USonic.NOW:self.__usonic_now, USonic.LOG:self.__usonic_log}
 		self.tweet = tweet
 		# Initialize database
 		self.db = USonicDB()
@@ -53,27 +53,28 @@ class USonic(OperatorBase):
 	# Concrete methods of super class
 	def operate(self, args, tweet_id):
 		option = args[0]
-		OPTIONS[option](tweet_id)
+		self.OPTIONS[option](tweet_id)
 
 	def check_args(self, args):
-		return arags[0] in OPTIONS
+		return args[0] in self.OPTIONS
 
 	"""
 	Usonic current data.
 	@param tweet_id : operate tweet id
 	"""
 	def __usonic_now(self, tweet_id):
-		distance = measure_distance()
+		distance = self.measure_distance()
 		message = MESSAGE_NOW_FORMAT.format(str(distance))
-		self.tweet.update(status=message)
+		self.tweet.update(message, tweet_id)
 
 	def __usonic_log(self, tweet_id):
 		now = datetime.datetime.now()
-		from_time = now - datetime.timedelta(days=7)
+		# from_time = now - datetime.timedelta(days=7)
+		from_time = now - datetime.timedelta(hours=1)
 		log = self.db.select_between(from_time, now)
 		Gu.create_usonic_graph(log, USONIC_GRAPH_TEMP)
 		message = MESSAGE_LOG_FORMAT
-		self.tweet.update_with_media(USONIC_GRAPH_TEMP, message)
+		self.tweet.update_with_media(USONIC_GRAPH_TEMP, message, tweet_id)
 
 	def __fetch_log(self, tweet_id, from_time, to_time):
 		# Read log from db file
@@ -165,7 +166,7 @@ class USonicDB:
 		try:
 			cursor = self.conn.cursor()
 			cursor.execute(SELECT_BETWEEN_SQL, [start, end])
-			return [USonicData(row[0], row[1], row[2]) for row in cursor]
+			return [USonicData(row[0], datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S"), row[2]) for row in cursor]
 		except sqlite.Error, e:
 			print("Select error.")
 			print(e)
@@ -175,7 +176,7 @@ class USonicDB:
 		try:
 			cursor = self.conn.cursor()
 			cursor.execute(SELECT_SQL)
-			return [USonicData(row[0], row[1], row[2]) for row in cursor]
+			return [USonicData(row[0], datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S"), row[2]) for row in cursor]
 		except sqlite.Error, e:
 			print("Select error.")
 			print(e)
