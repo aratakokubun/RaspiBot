@@ -12,26 +12,24 @@ import GraphUtils as Gu
 TRIG_GPIO = 17
 ECHO_GPIO = 27
 
+# Options
+NOW = "now"
+HOUR = "hour"
+DAY = "day"
+OPTIONS = [NOW, HOUR, DAY]
+
 # Message
-MESSAGE_NOW_FORMAT = "Current distance is {0}[cm]."
-MESSAGE_LOG_FORMAT = "Distance log in an hour."
+USONIC_NOW_FMT = "Current distance is {0}[cm]."
+USONIC_LOG_FMT = "Distance log in {0}."
 
 # Files
 USONIC_GRAPH_TEMP = "./image/usonic_temp.png"
 	
 class USonic(OperatorBase):
 
-	# Option
-	NOW = "now"
-	LOG = "log"
-	# OPTIONS = {NOW:__usonic_now, LOG:__usonic_log}
-	
 	def __init__(self, tweet):
 		super(USonic, self).__init__("usonic", 1)
-		self.OPTIONS = {USonic.NOW:self.__usonic_now, USonic.LOG:self.__usonic_log}
 		self.tweet = tweet
-		# Initialize database
-		self.db = USonicDB()
 		# Specify pin number as General Puroise Pin number
 		GPIO.setmode(GPIO.BCM)
 		# Set usonic pin
@@ -53,10 +51,13 @@ class USonic(OperatorBase):
 	# Concrete methods of super class
 	def operate(self, args, tweet_id):
 		option = args[0]
-		self.OPTIONS[option](tweet_id)
+		if option == NOW:
+			self.__usonic_now(tweet_id)
+		else:
+			self.__usonic_log(tweet_id, span=option)
 
 	def check_args(self, args):
-		return args[0] in self.OPTIONS
+		return args[0] in OPTIONS
 
 	"""
 	Usonic current data.
@@ -64,16 +65,21 @@ class USonic(OperatorBase):
 	"""
 	def __usonic_now(self, tweet_id):
 		distance = self.measure_distance()
-		message = MESSAGE_NOW_FORMAT.format(str(distance))
+		message = USONIC_NOW_FMT.format(str(distance))
 		self.tweet.update(message, tweet_id)
 
-	def __usonic_log(self, tweet_id):
+	def __usonic_log(self, tweet_id, span=HOUR):
 		now = datetime.datetime.now()
-		# from_time = now - datetime.timedelta(days=7)
-		from_time = now - datetime.timedelta(hours=1)
-		log = self.db.select_between(from_time, now)
-		Gu.create_usonic_graph(log, USONIC_GRAPH_TEMP)
-		message = MESSAGE_LOG_FORMAT
+		if span == DAY:
+			from_time = now - datetime.timedelta(days=1)
+			axis_span = 120
+		else:
+			from_time = now - datetime.timedelta(hours=1)
+			axis_span = 10
+		db = USonicDB()
+		log = db.select_between(from_time, now)
+		Gu.create_usonic_graph(log, USONIC_GRAPH_TEMP, axis_span=axis_span)
+		message = USONIC_LOG_FMT.format(span)
 		self.tweet.update_with_media(USONIC_GRAPH_TEMP, message, tweet_id)
 
 	def __fetch_log(self, tweet_id, from_time, to_time):
@@ -86,9 +92,9 @@ class USonic(OperatorBase):
 	"""
 	def measure_distance(self):
 		# Send pulse
-		GPIO.output(17, True)
+		GPIO.output(TRIG_GPIO, True)
 		time.sleep(0.00001)
-		GPIO.output(17, False)
+		GPIO.output(TRIG_GPIO, False)
 		# Wait while ECHO pin input
 		while GPIO.input(ECHO_GPIO) == 0:
 				signaloff = time.time()
@@ -132,7 +138,7 @@ class USonicDB:
 	def __init__(self, db_file=DB_FILE):
 		self.db_file = db_file
 		try:
-			self.conn = sqlite.connect(DB_FILE)
+			self.conn = sqlite.connect(db_file)
 			print("Connection established")
 			self.__create_table()
 		except sqlite.Error, e:

@@ -3,6 +3,7 @@ json
 *.conf
 image
 usonic
+dht
 .python-version
 *.pyc
 *.org
